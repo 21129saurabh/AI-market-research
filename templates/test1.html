@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Testing Embedded Chatbot</title>
+  </head>
+  <body>
+    <h1>Testing Embedded Chatbot</h1>
+    <p>This is a test page for the floating chatbot.</p>
+
+    <!-- Chatbot Embed Code -->
+    <div id="chatbot-container"></div>
+<script>
+  const CHATBOT_API_KEY = "d50686d3-406b-4558-970e-a9cd24fe52a9";
+  const CHATBOT_SERVER = "http://127.0.0.1:8000"; // Your Django server
+
+  const script = document.createElement("script");
+  script.src = CHATBOT_SERVER + "/static/chatbot.js";
+  script.onload = () => {
+    window.initChatbot(CHATBOT_API_KEY);
+  };
+  document.body.appendChild(script);
+</script>
+
+  </body>
+</html>
