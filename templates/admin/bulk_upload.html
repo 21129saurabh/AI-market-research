@@ -1,0 +1,68 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  <h2>Upload Multiple Files for {{ website.domain }}</h2>
+  
+  <form id="upload-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" id="file-input" name="files" multiple required>
+    <br><br>
+    <button type="submit" class="default">Upload</button>
+  </form>
+
+  <div id="progress-container" style="display:none; margin-top:20px;">
+    <div style="background:#ddd; height:25px; width:100%; border-radius:5px; overflow:hidden;">
+      <div id="progress-bar" style="background:#28a745; width:0%; height:100%; color:white; text-align:center; transition:width 0.3s ease;">
+        0%
+      </div>
+    </div>
+    <p id="progress-status" style="margin-top:10px;">Uploading and processing...</p>
+  </div>
+
+  <script>
+    const form = document.getElementById("upload-form");
+    const fileInput = document.getElementById("file-input");
+    const progressBar = document.getElementById("progress-bar");
+    const progressContainer = document.getElementById("progress-container");
+    const progressStatus = document.getElementById("progress-status");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const fileCount = fileInput.files.length || 1;  // Always at least 1 to avoid division by zero
+
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "", true);
+
+      progressContainer.style.display = "block";
+
+      let fakeProgress = 0;
+
+      // Calculate speed: more files = slower progress
+      const baseInterval = 200;    // base speed
+      const intervalTime = baseInterval + (fileCount * 300);  // increase delay for more files
+      const progressStep = fileCount > 5 ? 1 : 2;  // smaller step for large uploads
+
+      const progressInterval = setInterval(() => {
+        if (fakeProgress < 95) {
+          fakeProgress += progressStep;
+          progressBar.style.width = fakeProgress + "%";
+          progressBar.innerText = Math.min(Math.floor(fakeProgress), 99) + "%";
+        }
+      }, intervalTime);
+
+      xhr.onload = function () {
+        clearInterval(progressInterval);
+        progressBar.style.width = "100%";
+        progressBar.innerText = "100%";
+        progressStatus.innerText = "✅ Upload and processing complete!";
+        setTimeout(() => {
+          window.location.href = "/admin/research/website/{{ website.id }}/change/";
+        }, 1500);
+      };
+
+      xhr.send(formData);
+    });
+  </script>
+{% endblock %}

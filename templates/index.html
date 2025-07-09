@@ -1,647 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Market Research Search</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Market Research Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.0.12/marked.min.js"></script>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-      }
-
-      body {
-        background-color: #f8fafc;
-        color: #1e293b;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-
-      @font-face {
-        font-family: "Inter";
-        font-style: normal;
-        font-weight: 400;
-        src: url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2)
-          format("woff2");
-      }
-
-      @font-face {
-        font-family: "Inter";
-        font-style: normal;
-        font-weight: 500;
-        src: url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuI6fAZ9hiA.woff2)
-          format("woff2");
-      }
-
-      @font-face {
-        font-family: "Inter";
-        font-style: normal;
-        font-weight: 600;
-        src: url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2)
-          format("woff2");
-      }
-
-      header {
-        background: linear-gradient(135deg, #4f46e5, #7c3aed);
-        color: white;
-        padding: 1.75rem 1.5rem;
-        text-align: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        position: relative;
-      }
-
-      .header-content {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      h1 {
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-      }
-
-      .subtitle {
-        font-size: 1.1rem;
-        opacity: 0.95;
-        font-weight: 400;
-        max-width: 700px;
-        margin: 0 auto;
-      }
-
-      .container {
-        max-width: 900px;
-        margin: 2.5rem auto;
-        padding: 0 1.5rem;
-        width: 100%;
-        flex: 1;
-      }
-
-      .search-section {
-        background: white;
-        border-radius: 0.75rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        padding: 2rem;
-        margin-bottom: 2rem;
-      }
-
-      .search-box {
-        display: flex;
-        gap: 0.75rem;
-        margin-bottom: 1.5rem;
-      }
-
-      #search-input {
-        flex: 1;
-        padding: 1rem 1.25rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.75rem;
-        font-size: 1.05rem;
-        outline: none;
-        transition: all 0.2s ease;
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
-      }
-
-      #search-input:focus {
-        border-color: #818cf8;
-        box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
-      }
-
-      #search-button {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        color: white;
-        border: none;
-        padding: 0 2rem;
-        border-radius: 0.75rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-
-      #search-button:hover {
-        background: linear-gradient(135deg, #4f46e5, #7c3aed);
-        transform: translateY(-1px);
-        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-      }
-
-      #search-button:disabled {
-        background: #c7d2fe;
-        transform: none;
-        box-shadow: none;
-        cursor: not-allowed;
-      }
-
-      .examples {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 1rem;
-        margin-top: 1.5rem;
-      }
-
-      .example-card {
-        background: #f1f5f9;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 1px solid #e2e8f0;
-      }
-
-      .example-card:hover {
-        background: #e2e8f0;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      }
-
-      .example-card h3 {
-        font-size: 0.95rem;
-        color: #334155;
-        margin-bottom: 0.5rem;
-      }
-
-      .example-card p {
-        font-size: 0.85rem;
-        color: #64748b;
-      }
-
-      .results-section {
-        background: white;
-        border-radius: 0.75rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        padding: 2rem;
-        min-height: 400px;
-      }
-
-      .results-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #e2e8f0;
-      }
-
-      .results-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #1e293b;
-      }
-
-      .clear-btn {
-        background: none;
-        border: none;
-        color: #64748b;
-        cursor: pointer;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-      }
-
-      .clear-btn:hover {
-        color: #475569;
-      }
-
-      .message {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1.75rem;
-        animation: fadeIn 0.3s ease-out;
-      }
-
-      .avatar {
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        object-fit: cover;
-        flex-shrink: 0;
-        border: 2px solid #e2e8f0;
-      }
-
-      .message-content {
-        flex: 1;
-      }
-
-      .message-header {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: #334155;
-      }
-
-      .user .message-header {
-        color: #065f46;
-      }
-
-      .bot .message-header {
-        color: #3730a3;
-      }
-
-      .message-text {
-        line-height: 1.7;
-        padding: 1rem;
-        border-radius: 0.75rem;
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-      }
-
-      .user .message-text {
-        background-color: #d1fae5;
-        border-bottom-right-radius: 0;
-        border-color: #a7f3d0;
-      }
-
-      .bot .message-text {
-        background-color: #e0e7ff;
-        border-bottom-left-radius: 0;
-        border-color: #c7d2fe;
-      }
-
-      .typing-indicator {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        color: #64748b;
-        font-style: italic;
-        margin-left: 58px;
-        margin-bottom: 1.5rem;
-      }
-
-      .typing-dots {
-        display: flex;
-        gap: 0.35rem;
-      }
-
-      .typing-dot {
-        width: 9px;
-        height: 9px;
-        background-color: #94a3b8;
-        border-radius: 50%;
-        animation: pulse 1.5s infinite ease-in-out;
-      }
-
-      .typing-dot:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-
-      .typing-dot:nth-child(3) {
-        animation-delay: 0.4s;
-      }
-
-      footer {
-        margin-top: auto;
-        text-align: center;
-        padding: 1.5rem;
-        color: #64748b;
-        font-size: 0.9rem;
-        background: #f1f5f9;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-        to {
-          opacity: 1;
-          transform: translateY(0);
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
         }
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 0.5;
-          transform: scale(0.9);
-        }
-        50% {
-          opacity: 1;
-          transform: scale(1.1);
-        }
-      }
-
-      @media (max-width: 768px) {
-        h1 {
-          font-size: 1.6rem;
-        }
-
-        .subtitle {
-          font-size: 1rem;
-        }
-
         .container {
-          margin: 1.5rem auto;
-          padding: 0 1rem;
+            width: 100%;
+            max-width: 1200px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
         }
-
-        .search-section,
-        .results-section {
-          padding: 1.5rem;
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            margin-bottom: 20px;
         }
-
-        .search-box {
-          flex-direction: column;
+        .header h1 {
+            font-size: 2rem;
+            color: #1e3a8a;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
-
-        #search-button {
-          padding: 1rem;
-          justify-content: center;
+        .header p {
+            font-size: 1rem;
+            color: #4b5563;
         }
-      }
+        .chat-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .chat-container {
+            flex: 1;
+            border-radius: 12px;
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .chat-message {
+            margin: 12px 0;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 85%;
+            position: relative;
+            animation: fadeIn 0.3s ease-in;
+        }
+        .chat-message.user {
+            background: #3b82f6;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-message.ai {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            color: #1f2937;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-message.error {
+            background: #fee2e2;
+            color: #b91c1c;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-message.ai h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 12px;
+        }
+        .chat-message.ai h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 15px 0 10px;
+        }
+        .chat-message.ai p {
+            margin-bottom: 12px;
+            color: #374151;
+        }
+        .chat-message.ai ul {
+            list-style-type: disc;
+            padding-left: 25px;
+            margin-bottom: 12px;
+        }
+        .chat-message.ai ul li {
+            margin-bottom: 8px;
+        }
+        .chat-message .timestamp {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+        .chat-container img {
+            max-width: 80%;
+            height: auto;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        .chat-input-container {
+            position: sticky;
+            bottom: 0;
+            background: #ffffff;
+            padding: 15px 20px;
+            border-top: 1px solid #e5e7eb;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .chat-input {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .chat-input input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        .chat-input button {
+            padding: 14px 30px;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+        .chat-input button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(90deg, #1d4ed8, #1e40af);
+        }
+        .example-queries {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+        .example-queries button {
+            padding: 10px 20px;
+            background: #f1f5f9;
+            border: 1px solid #d1d5db;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #1f2937;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .example-queries button:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        .loading {
+            display: none;
+            font-size: 0.9rem;
+            color: #6b7280;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #3b82f6;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .chat-container {
+                padding: 15px;
+            }
+            .chat-message {
+                max-width: 90%;
+            }
+            .chat-container img {
+                max-width: 100%;
+            }
+            .chat-input-container {
+                padding: 10px 15px;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <header>
-      <div class="header-content">
-        <h1><span>🔍</span> AI Market Research Search</h1>
-        <p class="subtitle">
-          Get instant insights about market trends, competitors, and industry
-          analysis powered by AI
-        </p>
-      </div>
-    </header>
-
+</head>
+<body>
     <div class="container">
-      <section class="results-section" id="results-section">
-        <div class="results-header">
-          <h2 class="results-title">Research Results</h2>
-          <button class="clear-btn" id="clear-results">
-            <span>Clear All</span>
-          </button>
+        <div class="header">
+            <h1>🔍 AI Market Research Assistant</h1>
+            <p>Your intelligent companion for instant market insights, trends, and competitive analysis.</p>
         </div>
 
-        <div id="chat-container">
-          <!-- Initial welcome message -->
-          <div class="message bot">
-            <img
-              src="https://ui-avatars.com/api/?name=AI&background=e0e7ff&color=3730a3"
-              alt="AI Assistant"
-              class="avatar"
-            />
-            <div class="message-content">
-              <div class="message-header">Market Research Assistant</div>
-              <div class="message-text">
-                <p>
-                  Welcome to the AI Market Research Search tool! I can help you
-                  analyze:
-                </p>
-                <ul>
-                  <li>Industry trends and growth projections</li>
-                  <li>Competitive landscapes and market share</li>
-                  <li>Consumer behavior and preferences</li>
-                  <li>Emerging technologies and innovations</li>
-                </ul>
-                <p>
-                  Try searching for any market research topic or click one of
-                  the example queries above.
-                </p>
-              </div>
+        <div class="chat-section">
+            <div id="chat-container" class="chat-container">
+                <div class="chat-message ai">
+                    <div>Hi! I'm your AI Market Research Assistant. I can provide deep insights on:</div>
+                    <ul>
+                        <li>Industry trends and growth projections</li>
+                        <li>Competitive landscapes and market share</li>
+                        <li>Consumer behavior and preferences</li>
+                        <li>Emerging technologies and innovations</li>
+                    </ul>
+                    <div>Type a question or try an example query below to get started!</div>
+                    <div class="timestamp"></div>
+                </div>
             </div>
-          </div>
+            <div id="loading" class="loading">Loading...</div>
+            <div class="chat-input-container">
+                <div class="chat-input">
+                    <input type="text" id="chat-input" placeholder="Ask about market trends, competitors, or more...">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+                <div class="example-queries">
+                    <button onclick="sendMessage('Renewable Energy Trends')">Renewable Energy Trends</button>
+                    <button onclick="sendMessage('EV Market Competitors')">EV Market Competitors</button>
+                    <button onclick="sendMessage('AI in Healthcare')">AI in Healthcare</button>
+                </div>
+            </div>
         </div>
-      </section>
-
-      <section class="search-section">
-        <div class="search-box">
-          <input
-            type="text"
-            id="search-input"
-            placeholder="Ask about market trends, competitors, or industry analysis..."
-            autofocus
-          />
-          <button id="search-button">
-            <span>Search</span>
-          </button>
-        </div>
-
-        <div class="examples">
-          <div
-            class="example-card"
-            onclick="useExample('What are the current trends in renewable energy?')"
-          >
-            <h3>Renewable Energy Trends</h3>
-            <p>
-              Explore the latest developments in solar, wind, and other
-              renewable technologies
-            </p>
-          </div>
-          <div
-            class="example-card"
-            onclick="useExample('Who are the main competitors in the electric vehicle market?')"
-          >
-            <h3>EV Market Competitors</h3>
-            <p>Compare major players in the electric vehicle industry</p>
-          </div>
-          <div
-            class="example-card"
-            onclick="useExample('What is the market size for AI in healthcare?')"
-          >
-            <h3>AI in Healthcare</h3>
-            <p>Understand the growth and opportunities in healthcare AI</p>
-          </div>
-        </div>
-      </section>
     </div>
 
-    <footer>
-      <p>© 2023 AI Market Research Search | Powered by Advanced AI Analytics</p>
-    </footer>
-
     <script>
-      // Configuration - Replace with your actual API key
-      const CONFIG = {
-        API_KEY: "462da02a-2648-4d33-a405-130e60c54cfb", // Replace with your actual API key
-        API_BASE_URL: "http://127.0.0.1:8000/api/search/", // Your API endpoint
-        ENABLE_USER_REGISTRATION: false, // Set to true if you want user registration
-      };
+        // Replace with your actual API key
+        const API_KEY = "462da02a-2648-4d33-a405-130e60c54cfb";
+        const CHATBOT_SERVER = "http://127.0.0.1:8000";
 
-      document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.getElementById("search-input");
-        const searchButton = document.getElementById("search-button");
-        const clearResultsBtn = document.getElementById("clear-results");
-        const chatContainer = document.getElementById("chat-container");
-        let isTyping = false;
-
-        // Initialize the application
-        initEventListeners();
-
-        function initEventListeners() {
-          // Handle search when button is clicked
-          searchButton.addEventListener("click", handleSearch);
-
-          // Handle search when Enter key is pressed
-          searchInput.addEventListener("keypress", function (e) {
-            if (e.key === "Enter") {
-              handleSearch();
-            }
-          });
-
-          // Clear all results
-          clearResultsBtn.addEventListener("click", clearAllResults);
+        function formatTimestamp() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
         }
 
-        function handleSearch() {
-          const query = searchInput.value.trim();
-          if (!query || isTyping) return;
+        function sendMessage(query = null) {
+            const input = document.getElementById('chat-input');
+            const message = query || input.value.trim();
+            if (!message) return;
 
-          // ✅ Hide example cards after first search
-          const exampleSection = document.querySelector(".examples");
-          if (exampleSection) {
-            exampleSection.style.display = "none";
-          }
+            // Display user message
+            const chatContainer = document.getElementById('chat-container');
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chat-message user';
+            userMessage.innerHTML = `<div>You: ${message}</div><div class="timestamp">${formatTimestamp()}</div>`;
+            chatContainer.appendChild(userMessage);
 
-          addMessage("user", query);
-          searchInput.value = "";
-          showTyping();
-          isTyping = true;
-          searchButton.disabled = true;
+            // Clear input if not using example query
+            if (!query) input.value = '';
 
-          fetch(`${CONFIG.API_BASE_URL}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              message: query,
-              api_key: CONFIG.API_KEY,
-            }),
-          })
-            .then((response) => {
-              if (!response.ok) {
-                return response.json().then((err) => {
-                  throw new Error(
-                    err.message ||
-                      `API request failed with status ${response.status}`
-                  );
-                });
-              }
-              return response.json();
+            // Show loading indicator
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+
+            // Send API request to search_api
+            fetch(`${CHATBOT_SERVER}/api/search/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message, api_key: API_KEY })
             })
-            .then((data) => {
-              removeTyping();
-              if (data.reply) {
-                addMessage("bot", data.reply);
-              } else {
-                addMessage(
-                  "bot",
-                  "I couldn't generate a response. Please try again."
-                );
-              }
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading indicator
+                loading.style.display = 'none';
+
+                if (data.error) {
+                    displayMessage(`Error: ${data.error}`, 'error');
+                    return;
+                }
+
+                // Display AI response as parsed markdown
+                displayMessage(`AI: ${data.reply}`, 'ai', true);
+
+                // Display graphs if present
+                if (data.image_urls && data.image_urls.length > 0) {
+                    data.image_urls.forEach(url => {
+                        const img = document.createElement('img');
+                        img.src = url;
+                        img.alt = 'Market Research Graph';
+                        img.onerror = () => {
+                            console.error('Failed to load image:', url);
+                            displayMessage('Failed to load graph.', 'error');
+                        };
+                        chatContainer.appendChild(img);
+                    });
+                }
+
+                // Scroll to bottom
+                chatContainer.scrollTop = chatContainer.scrollHeight;
             })
-            .catch((error) => {
-              removeTyping();
-              console.error("API Error:", error);
-              addMessage("bot", `Error: ${error.message}`);
-            })
-            .finally(() => {
-              isTyping = false;
-              searchButton.disabled = false;
+            .catch(error => {
+                // Hide loading indicator
+                loading.style.display = 'none';
+                console.error('API error:', error);
+                displayMessage('An error occurred while fetching the response.', 'error');
             });
         }
 
-        function addMessage(sender, content) {
-          const messageDiv = document.createElement("div");
-          messageDiv.className = `message ${sender}`;
-
-          const avatarSrc =
-            sender === "user"
-              ? "https://ui-avatars.com/api/?name=User&background=d1fae5&color=065f46"
-              : "https://ui-avatars.com/api/?name=AI&background=e0e7ff&color=3730a3";
-
-          messageDiv.innerHTML = `
-                    <img src="${avatarSrc}" alt="${
-            sender === "user" ? "You" : "AI Assistant"
-          }" class="avatar">
-                    <div class="message-content">
-                        <div class="message-header">${
-                          sender === "user"
-                            ? "You"
-                            : "Market Research Assistant"
-                        }</div>
-                        <div class="message-text">${formatContent(
-                          content
-                        )}</div>
-                    </div>
-                `;
-
-          chatContainer.appendChild(messageDiv);
-          chatContainer.scrollTop = chatContainer.scrollHeight;
+        function displayMessage(text, type, isMarkdown = false) {
+            const chatContainer = document.getElementById('chat-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${type}`;
+            if (isMarkdown && type === 'ai') {
+                // Remove 'AI: ' prefix for markdown parsing
+                const content = text.replace(/^AI: /, '');
+                messageDiv.innerHTML = marked.parse(content) + `<div class="timestamp">${formatTimestamp()}</div>`;
+            } else {
+                messageDiv.innerHTML = `<div>${text}</div><div class="timestamp">${formatTimestamp()}</div>`;
+            }
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        function formatContent(content) {
-          if (typeof content === "string") {
-            // Convert markdown-like formatting to HTML
-            return content
-              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // bold
-              .replace(/\*(.*?)\*/g, "<em>$1</em>") // italic
-              .replace(/\n/g, "<br>") // line breaks
-              .replace(/\• (.*?)(<br>|$)/g, "• $1<br>") // bullet points
-              .replace(
-                /\[(.*?)\]\((.*?)\)/g,
-                '<a href="$2" target="_blank">$1</a>'
-              ); // links
-          }
-          return content;
-        }
+        // Handle enter key for input
+        document.getElementById('chat-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
 
-        function showTyping() {
-          const typingDiv = document.createElement("div");
-          typingDiv.className = "typing-indicator";
-          typingDiv.id = "typing-indicator";
-          typingDiv.innerHTML = `
-                    <span>Analyzing market data</span>
-                    <div class="typing-dots">
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                    </div>
-                `;
-          chatContainer.appendChild(typingDiv);
-          chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function removeTyping() {
-          const typingDiv = document.getElementById("typing-indicator");
-          if (typingDiv) {
-            typingDiv.remove();
-          }
-        }
-
-        function clearAllResults() {
-          if (confirm("Are you sure you want to clear all research results?")) {
-            chatContainer.innerHTML = `
-                        <div class="message bot">
-                            <img src="https://ui-avatars.com/api/?name=AI&background=e0e7ff&color=3730a3" alt="AI Assistant" class="avatar">
-                            <div class="message-content">
-                                <div class="message-header">Market Research Assistant</div>
-                                <div class="message-text">
-                                    <p>Your research history has been cleared. What would you like to explore next?</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-          }
-        }
-
-        // Example query handler
-        window.useExample = function (exampleQuery) {
-          searchInput.value = exampleQuery;
-          searchInput.focus();
-        };
-      });
+        // Set timestamp for initial message
+        document.querySelector('.chat-message.ai .timestamp').textContent = formatTimestamp();
     </script>
-  </body>
+</body>
 </html>
